@@ -1,10 +1,6 @@
-
-import imutils
-from PIL import Image, ImageEnhance
+from ctypes import sizeof
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
-import Utilis
 import Preprocessing
 
 N_RHO_BINS = 7
@@ -23,16 +19,14 @@ LEG_LENGTH = 25
 
 
 class Cold():
-    def __init__(self, sharpness_factor,bordersize,show_images):
+    def __init__(self, sharpness_factor,bordersize):
         self.sharpness_factor = sharpness_factor
         self.bordersize = bordersize
-        self.show_images =show_images
         
         
     def get_cold_features(self, img, approx_poly_factor = 0.01):
-        
-        bw_image = Preprocessing.preprocess_image(img, self.sharpness_factor, self.bordersize)
-        contours = self.get_contour_pixels(bw_image)
+        bw_image,_ = Preprocessing.preprocess_image(img, self.sharpness_factor, self.bordersize)
+        contours = Preprocessing.get_contour_pixels(bw_image)
         
         rho_bins_edges = np.log10(np.linspace(R_INNER, R_OUTER, N_RHO_BINS))
         feature_vectors = np.zeros((len(K_S), N_BINS))
@@ -70,15 +64,14 @@ class Cold():
 
 
 class Hinge():
-    def __init__(self, sharpness_factor,bordersize,show_images):
+    def __init__(self, sharpness_factor,bordersize):
         self.sharpness_factor = sharpness_factor
         self.bordersize = bordersize
-        self.show_images = show_images
         
     def get_hinge_features(self, img_file):
     
         bw_image, _ = Preprocessing.preprocess_image(img_file, self.sharpness_factor, self.bordersize)
-        contours = self.get_contour_pixels(bw_image)
+        contours = Preprocessing.get_contour_pixels(bw_image)
         
         hist = np.zeros((N_ANGLE_BINS, N_ANGLE_BINS))
             
