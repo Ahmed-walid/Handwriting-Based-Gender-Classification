@@ -1,5 +1,7 @@
-from ctypes import sizeof
+
 import cv2
+from skimage.transform import resize
+from skimage.feature import hog
 import numpy as np
 import Preprocessing
 
@@ -29,7 +31,7 @@ class Cold():
         contours = Preprocessing.get_contour_pixels(bw_image)
         
         rho_bins_edges = np.log10(np.linspace(R_INNER, R_OUTER, N_RHO_BINS))
-        feature_vectors = np.zeros((len(K_S), N_BINS))
+        feature_vectors = [] #np.zeros((len(K_S), N_BINS))
         
         # print([len(cnt) for cnt in contours])
         for j, k in enumerate(K_S):
@@ -46,7 +48,7 @@ class Cold():
                 
                 thetas = np.degrees(np.arctan2(y2s - y1s, x2s - x1s) + np.pi)
                 rhos = np.sqrt((y2s - y1s) ** 2 + (x2s - x1s) ** 2)
-                rhos_log_space = np.log10(rhos)
+                rhos_log_space = np.log10(rhos+0.001)
                 
                 quantized_rhos = np.zeros(rhos.shape, dtype=int)
                 for i in range(N_RHO_BINS):
@@ -57,9 +59,9 @@ class Cold():
                     hist[r_bin - 1, theta_bin] += 1
                 
             normalised_hist = hist / hist.sum()
-            feature_vectors[j] = normalised_hist.flatten()
+            feature_vectors.append(normalised_hist.flatten())
             
-        return feature_vectors.flatten()
+        return np.asarray(feature_vectors).flatten()
 
 
 
@@ -102,3 +104,20 @@ class Hinge():
         feature_vector = normalised_hist[np.triu_indices_from(normalised_hist, k = 1)]
         
         return feature_vector
+
+
+
+def HOG(img):
+
+    gray = cv2.cvtColor(np.float32(img), cv2.COLOR_BGR2GRAY)
+    #resizing image 
+    resized_img = np.resize(gray, (128,64)) 
+   
+    #creating hog features 
+    fd, hog_image = hog(resized_img, orientations=9, pixels_per_cell=(8, 8), 
+                        cells_per_block=(2, 2), visualize=True, multichannel=False)
+
+    # # Rescale histogram for better display 
+    # hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10)) 
+    
+    return fd
