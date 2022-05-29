@@ -30,15 +30,15 @@ hog_test = []
 i=0
 for img in trainData:
     #cold_train.append(cold.get_cold_features(img))
-    #hinge_train.append(hinge.get_hinge_features(img))
-    hog_train.append(HOG(img))
+    hinge_train.append(hinge.get_hinge_features(img))
+    #hog_train.append(HOG(img))
     print(i)
     i+=1
 
 for img in testData:
     #cold_test.append(cold.get_cold_features(img))
-    #hinge_test.append(hinge.get_hinge_features(img))
-    hog_test.append(HOG(img))
+    hinge_test.append(hinge.get_hinge_features(img))
+    #hog_test.append(HOG(img))
 
 
 print("Training...")

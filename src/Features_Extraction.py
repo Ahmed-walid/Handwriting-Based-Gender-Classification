@@ -71,7 +71,7 @@ class Hinge():
         self.bordersize = bordersize
         
     def get_hinge_features(self, img_file):
-    
+        img_file = Preprocessing.get_text_area(img_file)
         bw_image, _ = Preprocessing.preprocess_image(img_file, self.sharpness_factor, self.bordersize)
         contours = Preprocessing.get_contour_pixels(bw_image)
         
