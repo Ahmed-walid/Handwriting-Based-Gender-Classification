@@ -4,6 +4,7 @@ from skimage.transform import resize
 from skimage.feature import hog
 import numpy as np
 import Preprocessing
+from skimage.feature import greycomatrix , greycoprops
 
 N_RHO_BINS = 7
 N_ANGLE_BINS = 12
@@ -121,3 +122,22 @@ def HOG(img):
     # hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10)) 
     
     return fd
+
+
+def get_glcm_features(img):
+    """
+    Given a grayscale image with graylevels from 0 - 255, this function returns the contrast
+    and the homogeneity features of the image with the help of GLCM
+    """
+    img = np.array(img)
+    gray_scale_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # Tip: Make sure you understand the input-output of everything you write, 
+    # not doing that results in bugs that make you believe the lab is long
+    GLCM = greycomatrix(gray_scale_img, distances=[1], angles=[0], levels=256)
+    contrast = greycoprops(GLCM, prop='contrast')
+    homogeneity = greycoprops(GLCM, prop='homogeneity')
+    correlation = greycoprops(GLCM, prop='correlation')
+    energy = greycoprops(GLCM, prop='energy')
+    dissimilarity = greycoprops(GLCM, 'dissimilarity')
+
+    return  [np.float(energy) , np.float(dissimilarity) , np.float(contrast), np.float(homogeneity) , np.float(correlation)]

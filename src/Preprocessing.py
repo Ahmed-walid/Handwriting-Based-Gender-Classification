@@ -3,27 +3,34 @@ from PIL import Image, ImageEnhance
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import datetime
+from skimage import io
+from skimage.feature import greycomatrix , greycoprops
+import os
+from skimage.color import rgb2gray
 
 def get_text_area(image):
+    image = np.array(image)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (7,7), 0)
     thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
     # Create rectangular structuring element and dilate
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (20,20))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (40,40))
     dilate = cv2.dilate(thresh, kernel, iterations=4)
 
     # Find contours and draw rectangle
     cnts , _ = cv2.findContours(dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     #for i,c in enumerate(cnts):
-    c = cnts[-1]
+    c = cnts[1] if len(cnts)>1 else cnts[0]
     x,y,w,h = cv2.boundingRect(c)
     #cv2.rectangle(image, (x, y), (x + w, y + h), (36,255,12), 2)
-    return image[y:y+h, x:x+w]
+    cv2.imwrite("./aaa.jpg",image[y:y+h, x:x+w])
+    image = Image.fromarray(image[y:y+h, x:x+w].astype('uint8'), 'RGB')
+    return image
 
 def preprocess_image( im, sharpness_factor = 10, bordersize = 3):
 
-    
     enhancer = ImageEnhance.Sharpness(im)
     im_s_1 = enhancer.enhance(sharpness_factor)
     # plt.imshow(im_s_1, cmap='gray')
@@ -71,3 +78,6 @@ def get_contour_pixels(bw_image):
             
     #     plt.imshow(img2, cmap='gray')
     return contours
+
+
+

@@ -5,6 +5,7 @@ from PIL import Image
 import glob
 import pandas as pd
 import csv
+from skimage import io
 
 
 def read_data(file_name):
