@@ -129,15 +129,16 @@ def get_glcm_features(img):
     Given a grayscale image with graylevels from 0 - 255, this function returns the contrast
     and the homogeneity features of the image with the help of GLCM
     """
+    img = Preprocessing.get_text_area(img)
     img = np.array(img)
     gray_scale_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Tip: Make sure you understand the input-output of everything you write, 
     # not doing that results in bugs that make you believe the lab is long
-    GLCM = greycomatrix(gray_scale_img, distances=[1], angles=[0], levels=256)
-    contrast = greycoprops(GLCM, prop='contrast')
-    homogeneity = greycoprops(GLCM, prop='homogeneity')
-    correlation = greycoprops(GLCM, prop='correlation')
-    energy = greycoprops(GLCM, prop='energy')
-    dissimilarity = greycoprops(GLCM, 'dissimilarity')
+    GLCM = greycomatrix(gray_scale_img, [3,4,5,6] , [0, np.pi/4, np.pi/2, 3*np.pi/4] , levels=256)
+    contrast = greycoprops(GLCM, prop='contrast').flatten()
+    homogeneity = greycoprops(GLCM, prop='homogeneity').flatten()
+    correlation = greycoprops(GLCM, prop='correlation').flatten()
+    energy = greycoprops(GLCM, prop='energy').flatten()
+    dissimilarity = greycoprops(GLCM, 'dissimilarity').flatten()
 
-    return  [np.float(energy) , np.float(dissimilarity) , np.float(contrast), np.float(homogeneity) , np.float(correlation)]
+    return  np.asarray([energy,dissimilarity,homogeneity,correlation,contrast]).flatten()#,contrast, homogeneity , correlation]

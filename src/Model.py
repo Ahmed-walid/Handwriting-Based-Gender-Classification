@@ -1,3 +1,4 @@
+from sklearn import svm
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import metrics
@@ -18,8 +19,9 @@ LABELS_PATH = "../../labels.csv"
 dataset, labels = loadDataSet(DATASET_PATH,LABELS_PATH)
 trainData,validationData,testData,trainLabels,validationLabels,testLabels = splitData(dataset,labels)
 
-clf=RandomForestClassifier(n_estimators=100)
-# clf = KNeighborsClassifier(n_neighbors=7)
+#clf1=RandomForestClassifier(n_estimators=100)
+# clf2 = KNeighborsClassifier(n_neighbors=7)
+clf3 = svm.LinearSVC() 
 
 cold = Cold(bordersize=3,sharpness_factor=10)
 hinge = Hinge(bordersize=3,sharpness_factor=10)
@@ -37,26 +39,31 @@ glcm_test = []
 i=0
 for img in trainData:
     #cold_train.append(cold.get_cold_features(img))
-    #hinge_train.append(hinge.get_hinge_features(img))
+    hinge_train.append(hinge.get_hinge_features(img))
     #hog_train.append(HOG(img))
-    l = get_glcm_features(img)
-    glcm_train.append(l)
-    print(i)
+    #glcm_train.append(get_glcm_features(img))
+    print("Trained: "+ str(i))
     i+=1
 
 for img in testData:
     #cold_test.append(cold.get_cold_features(img))
-    # hinge_test.append(hinge.get_hinge_features(img))
+    hinge_test.append(hinge.get_hinge_features(img))
     # hog_test.append(HOG(img))
-    glcm_test.append(get_glcm_features(img))
+    #glcm_test.append(get_glcm_features(img))
+
+
 
 #np.hstack((hinge_train,hog_train))
 
-print(np.shape(glcm_train))
 
 print("Training...")
-clf.fit(glcm_train,trainLabels)
+clf3.fit(hinge_train,trainLabels)
 print("Finished.")
 
-y_pred=clf.predict(glcm_test)
+
+y_pred=clf3.predict(hinge_test)
+for i in range(0,len(y_pred)):
+    print(str(testLabels[i]) + " is classified as " + str(y_pred[i]))
+
+
 print("Accuracy:",metrics.accuracy_score(testLabels, y_pred))

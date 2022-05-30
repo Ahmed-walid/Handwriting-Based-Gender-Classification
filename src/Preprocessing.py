@@ -8,24 +8,46 @@ from skimage import io
 from skimage.feature import greycomatrix , greycoprops
 import os
 from skimage.color import rgb2gray
+import datetime 
+
+def removeShadow(img):
+    
+    rgb_planes = cv2.split(img)
+
+    result_planes = []
+    result_norm_planes = []
+    for plane in rgb_planes:
+        dilated_img = cv2.dilate(plane, np.ones((7,7), np.uint8))
+        bg_img = cv2.medianBlur(dilated_img, 21)
+        diff_img = 255 - cv2.absdiff(plane, bg_img)
+        norm_img = cv2.normalize(diff_img,None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
+        result_planes.append(diff_img)
+        result_norm_planes.append(norm_img)
+
+    result = cv2.merge(result_planes)
+    result_norm = cv2.merge(result_norm_planes)
+    return result_norm
 
 def get_text_area(image):
+    
     image = np.array(image)
+    image = removeShadow(image)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (7,7), 0)
-    thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-
+    ret,thresh = cv2.threshold(blur,127,255,cv2.THRESH_BINARY_INV)
     # Create rectangular structuring element and dilate
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (40,40))
     dilate = cv2.dilate(thresh, kernel, iterations=4)
 
     # Find contours and draw rectangle
     cnts , _ = cv2.findContours(dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    #for i,c in enumerate(cnts):
-    c = cnts[1] if len(cnts)>1 else cnts[0]
-    x,y,w,h = cv2.boundingRect(c)
-    #cv2.rectangle(image, (x, y), (x + w, y + h), (36,255,12), 2)
-    cv2.imwrite("./aaa.jpg",image[y:y+h, x:x+w])
+    cntsSorted = sorted(cnts, key=lambda x: cv2.contourArea(x))
+    x,y,w,h = cv2.boundingRect(cntsSorted[-1])
+
+    # abbas = cv2.rectangle(image, (x, y), (x + w, y + h), (36,255,12), 2)
+    # cv2.imwrite("./abbas/"+str(np.random.randint(0,1000))+".jpg",abbas)
+
+    #cv2.imwrite("./aaa.jpg",image[y:y+h, x:x+w])
     image = Image.fromarray(image[y:y+h, x:x+w].astype('uint8'), 'RGB')
     return image
 
