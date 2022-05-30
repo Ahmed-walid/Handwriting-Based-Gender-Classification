@@ -13,7 +13,6 @@ R_INNER = 5.0
 R_OUTER = 35.0
 K_S = np.arange(3, 8)
 
-#####
 
 N_ANGLE_BINS = 40
 BIN_SIZE = 360 // N_ANGLE_BINS
@@ -33,7 +32,6 @@ class Cold():
         rho_bins_edges = np.log10(np.linspace(R_INNER, R_OUTER, N_RHO_BINS))
         feature_vectors = [] #np.zeros((len(K_S), N_BINS))
         
-        # print([len(cnt) for cnt in contours])
         for j, k in enumerate(K_S):
             hist = np.zeros((N_RHO_BINS, N_ANGLE_BINS))
             for cnt in contours:
@@ -115,28 +113,18 @@ def HOG(img):
     #creating hog features 
     fd, hog_image = hog(resized_img, orientations=9, pixels_per_cell=(8, 8), 
                         cells_per_block=(2, 2), visualize=True, multichannel=False)
-
-    # # Rescale histogram for better display 
-    # hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10)) 
-    
+  
     return fd
 
 
 def get_glcm_features(img):
-    """
-    Given a grayscale image with graylevels from 0 - 255, this function returns the contrast
-    and the homogeneity features of the image with the help of GLCM
-    """
     img = Preprocessing.get_text_area(img)
     img = np.array(img)
     gray_scale_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # Tip: Make sure you understand the input-output of everything you write, 
-    # not doing that results in bugs that make you believe the lab is long
     GLCM = greycomatrix(gray_scale_img, [3,4,5,6] , [0, np.pi/4, np.pi/2, 3*np.pi/4] , levels=256)
     contrast = greycoprops(GLCM, prop='contrast').flatten()
     homogeneity = greycoprops(GLCM, prop='homogeneity').flatten()
     correlation = greycoprops(GLCM, prop='correlation').flatten()
     energy = greycoprops(GLCM, prop='energy').flatten()
     dissimilarity = greycoprops(GLCM, 'dissimilarity').flatten()
-
-    return  np.asarray([energy,dissimilarity,homogeneity,correlation,contrast]).flatten()#,contrast, homogeneity , correlation]
+    return  np.asarray([energy,dissimilarity,homogeneity,correlation,contrast]).flatten()
