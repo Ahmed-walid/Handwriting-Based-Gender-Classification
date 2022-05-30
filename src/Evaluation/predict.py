@@ -28,7 +28,7 @@ if __name__ == "__main__":
     TEST_DIR = args.test
 
     testImages = loadImages(TEST_DIR)
-    model = load('../model3.joblib')
+    model = load('../model5.joblib')
 
 
     hinge = Hinge(bordersize=3,sharpness_factor=10)
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         feature2 = get_glcm_features(img)
         classification.append(model.predict([np.hstack((feature1,feature2))]))
         time2    = time.time()
-        classificationTime.append(time2-time1)
+        classificationTime.append(np.round(time2-time1,2))
 
    
     assert len(classification)==len(testImages) and len(classificationTime)==len(testImages)

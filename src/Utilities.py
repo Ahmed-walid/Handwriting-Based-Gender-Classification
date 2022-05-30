@@ -58,9 +58,10 @@ def splitData(data,labels):
     return trainData,validationData,testData,trainLabels,validationLabels,testLabels
 
 # def splitData(data,labels):
-#     trainData, testData, trainLabels, testLabels = train_test_split(data, labels, test_size = 0.1 , random_state=50)
-#     #testData , validationData , testLabels, validationLabels = train_test_split(testData,testLabels, test_size=0.5,random_state=50)
-#     print(len(data))
-#     print(len(trainData))
-#     print(len(testData))
-#     return trainData,[],testData,trainLabels,[],testLabels
+    #trainData, testData, trainLabels, testLabels = train_test_split(data, labels, test_size = 0.15 , random_state=50)
+    #testData , validationData , testLabels, validationLabels = train_test_split(testData,testLabels, test_size=0.5,random_state=50)
+    # print(len(data))
+    # print(len(trainData))
+    # print(len(testData))
+    # return trainData,[],testData,trainLabels,[],testLabels
+    # return data,[],[],labels,[],[]   #full training
