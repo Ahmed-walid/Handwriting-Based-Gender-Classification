@@ -1,16 +1,9 @@
-import imutils
 from PIL import Image, ImageEnhance
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
-import datetime
-from skimage import io
-from skimage.feature import greycomatrix , greycoprops
-import os
-from skimage.color import rgb2gray
-import datetime 
 
-def removeShadow(img):
+
+def remove_shadow(img):
     
     rgb_planes = cv2.split(img)
 
@@ -31,7 +24,7 @@ def removeShadow(img):
 def get_text_area(image):
     
     image = np.array(image)
-    image = removeShadow(image)
+    image = remove_shadow(image)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (7,7), 0)
     ret,thresh = cv2.threshold(blur,127,255,cv2.THRESH_BINARY_INV)
@@ -44,10 +37,6 @@ def get_text_area(image):
     cntsSorted = sorted(cnts, key=lambda x: cv2.contourArea(x))
     x,y,w,h = cv2.boundingRect(cntsSorted[-1])
 
-    # abbas = cv2.rectangle(image, (x, y), (x + w, y + h), (36,255,12), 2)
-    # cv2.imwrite("./abbas/"+str(np.random.randint(0,1000))+".jpg",abbas)
-
-    #cv2.imwrite("./aaa.jpg",image[y:y+h, x:x+w])
     image = Image.fromarray(image[y:y+h, x:x+w].astype('uint8'), 'RGB')
     return image
 
@@ -55,11 +44,10 @@ def preprocess_image( im, sharpness_factor = 10, bordersize = 3):
 
     enhancer = ImageEnhance.Sharpness(im)
     im_s_1 = enhancer.enhance(sharpness_factor)
-    # plt.imshow(im_s_1, cmap='gray')
-    
+
     (width, height) = (im.width * 2, im.height * 2)
     im_s_1 = im_s_1.resize((width, height))
-    #if self.show_images: plt.imshow(im_s_1, cmap='gray')
+
     image = np.array(im_s_1)
     image = cv2.copyMakeBorder(
         image,
@@ -71,13 +59,10 @@ def preprocess_image( im, sharpness_factor = 10, bordersize = 3):
         value=[255,255,255]
     )
     orig_image = image.copy()
-
-    
+  
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = cv2.GaussianBlur(image,(3,3),0)
-   # if self.show_images: plt.imshow(image, cmap='gray')
     (thresh, bw_image) = cv2.threshold(image, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-   # if self.show_images: plt.imshow(bw_image, cmap='gray')
     return bw_image, orig_image
 
 
@@ -88,17 +73,12 @@ def get_contour_pixels(bw_image):
         bw_image, cv2.RETR_TREE, 
         cv2.CHAIN_APPROX_NONE
         ) 
-    # contours = imutils.grab_contours(contours)
+
     contours = sorted(contours, key=cv2.contourArea, reverse=True)[1:]
     
     img2 = bw_image.copy()[:,:,np.newaxis]
     img2 = np.concatenate([img2, img2, img2], axis = 2)
     
-    # if self.show_images:
-    #     for cnt in contours : 
-    #         cv2.drawContours(img2, [cnt], 0, (255, 0, 0), 1)  
-            
-    #     plt.imshow(img2, cmap='gray')
     return contours
 
 

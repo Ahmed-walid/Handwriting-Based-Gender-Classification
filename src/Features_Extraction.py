@@ -1,6 +1,5 @@
 
 import cv2
-from skimage.transform import resize
 from skimage.feature import hog
 import numpy as np
 import Preprocessing
@@ -78,7 +77,6 @@ class Hinge():
         
         hist = np.zeros((N_ANGLE_BINS, N_ANGLE_BINS))
             
-        # print([len(cnt) for cnt in contours])
         for cnt in contours:
             n_pixels = len(cnt)
             if n_pixels <= LEG_LENGTH:
