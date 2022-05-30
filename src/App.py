@@ -37,9 +37,10 @@ hinge = Hinge(bordersize=3,sharpness_factor=10)
 classifier = None
 if TRAIN:
 
-    for img in trainData:
+    for i,img in enumerate(trainData):
         hinge_train.append(hinge.get_hinge_features(img))
         glcm_train.append(get_glcm_features(img))
+        print(i)
 
     classifier=RandomForestClassifier(n_estimators=100)
 
@@ -49,10 +50,10 @@ if TRAIN:
 
     print("Finished training in " + str(time2-time1))
 
-    dump(classifier, 'model.joblib')
+    dump(classifier, 'model5.joblib')
 
 else:
-    classifier = load('model.joblib')
+    classifier = load('model3.joblib')
 
 
 time1 = time.time()

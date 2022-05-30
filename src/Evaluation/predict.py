@@ -28,7 +28,7 @@ if __name__ == "__main__":
     TEST_DIR = args.test
 
     testImages = loadImages(TEST_DIR)
-    model = load('../model.joblib')
+    model = load('../model3.joblib')
 
 
     hinge = Hinge(bordersize=3,sharpness_factor=10)
