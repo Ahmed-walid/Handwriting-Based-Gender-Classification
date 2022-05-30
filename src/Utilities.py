@@ -5,7 +5,6 @@ import glob
 import csv
 
 
-
 def read_data(file_name):
     rows = []
     with open(file_name, 'r') as file:
