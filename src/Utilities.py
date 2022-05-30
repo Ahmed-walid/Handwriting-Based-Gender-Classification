@@ -5,7 +5,28 @@ import glob
 import csv
 
 
-def read_data(file_name):
+def write_data_txt(arr,path):
+
+    file = open(path,'w') 
+    for i,val in enumerate(arr):
+        if i==len(arr)-1:
+            file.write(str(val))
+        else:
+            file.write(str(val)+"\n") 
+    file.close() 
+
+
+def read_data_txt(file_name):
+    rows = []
+    with open(file_name, 'r') as file:
+        lines = file.readlines()
+        for line in lines:
+            rows.append(line)
+    data = np.asarray(rows).astype(int)
+    return data
+
+
+def read_data_csv(file_name):
     rows = []
     with open(file_name, 'r') as file:
         csvreader = csv.reader(file, delimiter=',')
@@ -15,9 +36,16 @@ def read_data(file_name):
     return data
 
 
+def loadImages(path):
+    dataset = []
+    for filename in glob.glob(path+"/*.*", recursive=True):
+        im=Image.open(filename)
+        dataset.append(im)
+    return dataset
+
 def loadDataSet(dataSetPath,labelPath):
     dataset = []
-    labels  = read_data(labelPath)
+    labels  = read_data_csv(labelPath)
     for filename in glob.glob(dataSetPath+"/*.*", recursive=True):
         im=Image.open(filename)
         dataset.append(im)
